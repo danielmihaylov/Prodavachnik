@@ -1,4 +1,9 @@
 function startApp() {
+    if (sessionStorage.getItem('authToken') !== null) {
+        let username = sessionStorage.getItem('username');
+        $('#loggedInUser').text("Welcome, " + username + "!");
+    }
+
     showHideMenuLinks();
     showHomeView();
 
@@ -23,24 +28,25 @@ function startApp() {
         $('#' + viewName).show();
     }
 
-    function showHideMenuLinks() {
-        $("#linkHome").show();
-        if (sessionStorage.getItem('authToken') === null) {
-            // No logged in user
-            $("#linkLogin").show();
-            $("#linkRegister").show();
-            $("#linkListAds").hide();
-            $("#linkLogout").hide();
-        } else {
-            // We have logged in user
-            $("#linkLogin").hide();
-            $("#linkRegister").hide();
-            $("#linkListAds").show();
-            $("#linkLogout").show();
-        }
+    $("#linkHome").show();
+    if (sessionStorage.getItem('authToken') === null) {
+        // No logged in user
+        $("#linkLogin").show();
+        $("#linkRegister").show();
+        $("#linkListAds").hide();
+        $("#linkLogout").hide();
+        $("#loggedInUser").hide();
+    } else {
+        // We have logged in user
+        $("#linkLogin").hide();
+        $("#linkRegister").hide();
+        $("#linkListAds").show();
+        $("#linkLogout").show();
+        $("#loggedInUser").show();
     }
+}
 
-    function showHomeView() {
+function showHomeView() {
         showView('viewHome');
     }
 
@@ -80,14 +86,18 @@ function startApp() {
         }
     }
 
-    function saveAuthInSession(userInfo) {
-        let userAuth = userInfo._kmd.authtoken;
-        sessionStorage.setItem('authToken', userAuth);
-        let userId = userInfo._id;
-        sessionStorage.setItem('userId', userId);
-    }
+function saveAuthInSession(userInfo) {
+    let userAuth = userInfo._kmd.authtoken;
+    sessionStorage.setItem('authToken', userAuth);
+    let userId = userInfo._id;
+    sessionStorage.setItem('userId', userId);
+    let username = userInfo.username;
+    sessionStorage.setItem('username', username);
+    $('#loggedInUser').text("Welcome, " + username + "!");
+}
 
-    // user/register
+
+// user/register
     function registerUser() {
         const kinveyRegisterUrl = kinveyBaseUrl + "user/" + kinveyAppKey + "/";
         const kinveyAuthHeaders = {
